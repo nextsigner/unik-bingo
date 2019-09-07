@@ -1,6 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.12
+import QtMultimedia 5.12
 ApplicationWindow{
     id: app
     visibility: "Maximized"
@@ -25,6 +26,24 @@ ApplicationWindow{
             app.fs= Screen.width*0.02*unikSettings.zoom
         }
     }
+    Audio{
+        id:mp
+        source: './audio/dingdong.wav'
+    }
+    Audio{
+        id:mp2
+    }
+    Audio{
+        id:mpRepeat
+        playlist: Playlist {
+            id: playlistRepeat
+        }
+    }
+    Timer{
+        id: tPlayVoz
+        interval: 1000
+        onTriggered: mp2.play()
+    }
     Item {
         id: xApp
         anchors.fill: parent
@@ -33,21 +52,28 @@ ApplicationWindow{
             spacing: app.fs*0.5
             Row{
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: app.fs*3
+                spacing: app.fs
                 Text {
                     id: txtUNunSort
                     text: "Elegir Cartones"
-                    font.pixelSize: app.fs*2
+                    font.pixelSize: app.fs
                     color: app.c2
+                    width: rowAreasPrincipales.width/3-app.fs
+                }
+                Item{
+                    width: rowAreasPrincipales.width/4-app.fs
+                    height: 1
                 }
                 Text {
                     id: txtCantNunSort
                     text: "Todavìa no se ha sorteado ningùn nùmero."
-                    font.pixelSize: app.fs*2
+                    font.pixelSize: app.fs
                     color: app.c2
+                    width: rowAreasPrincipales.width/3-app.fs
                 }
             }
             Row{
+                id:rowAreasPrincipales
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 spacing: app.fs
@@ -58,14 +84,32 @@ ApplicationWindow{
                     height: 1
                     z:xfs.z+1
                     anchors.top: parent.top
-                    anchors.topMargin: app.fs*6
+                    anchors.topMargin: 0
                     Rectangle{
                         id:xFRed
-                        width: app.fs*12
+                        width: app.fs*10
                         height: width
                         color: app.c2
                         radius: width*0.5
                         anchors.centerIn: parent
+                        border.width: app.fs*0.3
+                        border.color: 'red'
+                        MouseArea{
+                            anchors.fill: parent
+                            onClicked: {
+                                if(labelUNum.text==='Iniciar'){
+                                    xAvisoDeComienzo.visible=true
+                                    return
+                                }
+                                tPlayVoz.stop()
+                                playlistRepeat.clear()
+                                playlistRepeat.addItem( "file://"+unik.currentFolderPath()+"/audio/repeat.flac")
+                                playlistRepeat.addItem( "file://"+unik.currentFolderPath()+"/audio/repeatLast.flac")
+                                playlistRepeat.addItem("file://"+unik.currentFolderPath()+"/audio/"+labelUNum.text.replace('<b>', '').replace('</b>', '')+".flac")
+                                playlistRepeat.currentIndex=0
+                                mpRepeat.play()
+                            }
+                        }
                         Rectangle{
                             id:fred
                             width: 0
@@ -99,8 +143,8 @@ ApplicationWindow{
                         }
                         Text{
                             id: labelUNum
-                            text:'-'
-                            font.pixelSize: parent.width*0.6
+                            text:'Iniciar'
+                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.6
                             color: app.c1
                             anchors.centerIn: parent
                             onTextChanged: anNNS.start()
@@ -108,16 +152,16 @@ ApplicationWindow{
                         Text{
                             id: labelUNum2
                             text:labelUNum.text
-                            font.pixelSize: parent.width*0.6
+                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.6
                             color: 'white'
                             anchors.centerIn: parent
-                            onTextChanged: anNNS.start()
                             opacity: fred.width>fred.parent.width*0.8?1.0:0.0
                             Behavior on opacity{NumberAnimation{duration: 250}}
                         }
                         Text{
+                            visible: labelUNum.text!=='Iniciar'
                             text:'<b>Ùltimo</b><br><b>Nùmero</b>'
-                            font.pixelSize: parent.width*0.1
+                            font.pixelSize: parent.width*0.08
                             horizontalAlignment: Text.AlignHCenter
                             textFormat: Text.RichText
                             color: app.c1
@@ -131,12 +175,46 @@ ApplicationWindow{
                         anchors.top: xUNS.bottom
                         anchors.topMargin: xFRed.width*0.5+unikSettings.borderWidth
                         anchors.horizontalCenter: parent.horizontalCenter
+                        onRepetir: {
+                            tPlayVoz.stop()
+                            playlistRepeat.clear()
+                            playlistRepeat.addItem( "file://"+unik.currentFolderPath()+"/audio/repeat.flac")
+                            playlistRepeat.addItem("file://"+unik.currentFolderPath()+"/audio/"+n+".flac")
+                            playlistRepeat.currentIndex=0
+                            mpRepeat.play()
+                        }
                     }
 
                 }
                 Xfs{
                     id:xfs
                 }
+            }
+        }
+        Rectangle{
+            id:xAvisoDeComienzo
+            width: parent.width*0.5
+            height: parent.height*0.5
+            color: app.c2
+            radius: app.fs
+            border.color: app.c1
+            border.width: app.fs*0.5
+            anchors.centerIn: parent
+            visible: false
+            MouseArea{
+                anchors.fill: parent
+                onDoubleClicked: {
+                    tAuto.start()
+                }
+            }
+            Text {
+                id: txtAvisoDeComienzo
+                text: 'El sorte del Bingo está por comenzar. Por favor seleccionen los cartones'
+                font.pixelSize: app.fs*2
+                color: app.c1
+                width: parent.width*0.8
+                wrapMode: Text.WordWrap
+                anchors.centerIn: parent
             }
         }
     }
@@ -148,21 +226,37 @@ ApplicationWindow{
         sequence: 'Up'
         onActivated: sortearNumero()
     }
+    Shortcut{
+        sequence: 'Return'
+        onActivated: tAuto.running=!tAuto.running
+    }
+    Timer{
+        id: tAuto
+        running: false
+        repeat: true
+        interval: 6000
+        onTriggered: sortearNumero()
+    }
     property var arraNumerosDisponibles: []
     property var arrayNumSort: []
     property int cantNumSort: 0
     function sortearNumero(){
+        xAvisoDeComienzo.visible=false
         var num = Math.round(Math.random()*99);
         for(var i=0;i<100;i++){
             if(xfd.children[0].children[i].numReal===num&&xfd.children[0].children[i].opacity>0.25){
                 xfd.children[0].children[i].opacity=0.25
                 xfs.children[0].children[i].opacity=1.0
-                if(labelUNum.text!=='-'){
+                if(labelUNum.text!=='Iniciar'){
                     xfa.listModel.insert(0,xfa.listModel.addNum(labelUNum.text))
                 }
-                labelUNum.text='<b>'+num+'</b>'
+                var num2Dig=num>9?''+num:'0'+num
+                labelUNum.text='<b>'+num2Dig+'</b>'
                 cantNumSort++
                 txtCantNunSort.text=app.cantNumSort>1?'Se han sorteado '+app.cantNumSort+' nùmeros':'Se ha sorteado '+app.cantNumSort+' nùmero'
+                mp.play()
+                mp2.source = './audio/'+num2Dig+'.flac'
+                tPlayVoz.start()
             }else{
                 if(xfd.children[0].children[i].numReal===num&&xfd.children[0].children[i].opacity===0.25){
                     sortearNumero()

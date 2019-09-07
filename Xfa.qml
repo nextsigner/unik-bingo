@@ -5,6 +5,7 @@ Item {
     width: app.fs*6
     height: parent.parent.height
     property alias listModel: lm
+    signal repetir(string n)
     ListView{
         id: lv
         model: lm
@@ -12,9 +13,6 @@ Item {
         width: r.width
         height: r.height
         anchors.horizontalCenter: parent.horizontalCenter
-        //rotation: 180
-        //orientation: ListView.B
-        //verticalLayoutDirection: ListView.BottomToTop
         ListModel{
             id:lm
             function addNum(n){
@@ -46,9 +44,15 @@ Item {
                     color: app.c2
                     anchors.centerIn: parent
                 }
-                Component.onCompleted: {
-                    xUNS2.width=r.width-app.fs*0.25*index
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        r.repetir((""+num).replace('<b>', '').replace('</b>', ''))
+                    }
                 }
+                Component.onCompleted: {
+                    xUNS2.width=r.width//-app.fs*0.25*index
+                }                
             }
         }
     }
