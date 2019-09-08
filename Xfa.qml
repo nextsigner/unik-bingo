@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.12
 
 Item {
     id: r
@@ -36,6 +37,19 @@ Item {
                         duration: 250
                         easing.type: Easing.OutBounce
                     }
+                }
+                Image {
+                    id: fondo3
+                    source: "file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
+                    anchors.fill: parent
+                    antialiasing: true
+                    opacity: 0.65
+                    visible: false
+                }
+                FastBlur {
+                    anchors.fill: fondo3
+                    source: fondo3
+                    radius: 10
                 }
                 Text {
                     id: txtNum

@@ -2,10 +2,12 @@ import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Window 2.12
 import QtMultimedia 5.12
+import Qt.labs.settings 1.0
+import QtGraphicalEffects 1.12
 ApplicationWindow{
     id: app
     visibility: "Maximized"
-    color: c1
+    color: c3
     width: Screen.width
     height: Screen.height
     property int fs: Screen.width*0.02*unikSettings.zoom
@@ -13,17 +15,24 @@ ApplicationWindow{
     property color c2
     property color c3
     property color c4
+    Settings{
+        id: appSettings
+        property int currentNumColor:0
+    }
     UnikSettings{
         id: unikSettings
         url: './unik-bingo.json'
         Component.onCompleted: {
+            unikSettings.currentNumColor=appSettings.currentNumColor
+            unikSettings.zoom=0.7
+            console.log('Cantidad de Temas: '+unikSettings.defaultColors.split('|').length)
             var mc=unikSettings.defaultColors.split('|')[unikSettings.currentNumColor]
             var colors=mc.split('-')
             app.c1=colors[0]
             app.c2=colors[1]
             app.c3=colors[2]
             app.c4=colors[3]
-            app.fs= Screen.width*0.02*unikSettings.zoom
+            app.fs= Screen.width*0.016*unikSettings.zoom
         }
     }
     Audio{
@@ -85,6 +94,7 @@ ApplicationWindow{
                     z:xfs.z+1
                     anchors.top: parent.top
                     anchors.topMargin: 0
+
                     Rectangle{
                         id:xFRed
                         width: app.fs*10
@@ -141,10 +151,23 @@ ApplicationWindow{
                                 }
                             }
                         }
+                        Image {
+                            id: fondo
+                            source: "file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
+                            anchors.fill: parent
+                            antialiasing: true
+                            opacity: 0.65
+                            visible: false
+                        }
+                        FastBlur {
+                            anchors.fill: fondo
+                            source: fondo
+                            radius: 10
+                        }
                         Text{
                             id: labelUNum
                             text:'Iniciar'
-                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.6
+                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.45
                             color: app.c1
                             anchors.centerIn: parent
                             onTextChanged: anNNS.start()
@@ -152,7 +175,7 @@ ApplicationWindow{
                         Text{
                             id: labelUNum2
                             text:labelUNum.text
-                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.6
+                            font.pixelSize: text==='Iniciar'?parent.width*0.15:parent.width*0.45
                             color: 'white'
                             anchors.centerIn: parent
                             opacity: fred.width>fred.parent.width*0.8?1.0:0.0
@@ -167,7 +190,7 @@ ApplicationWindow{
                             color: app.c1
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: labelUNum.top
-                            anchors.bottomMargin: 0-app.fs*1.5
+                            anchors.bottomMargin: 0-app.fs*0.75
                         }
                     }
                     Xfa{
@@ -242,8 +265,9 @@ ApplicationWindow{
     property int cantNumSort: 0
     function sortearNumero(){
         xAvisoDeComienzo.visible=false
-        var num = Math.round(Math.random()*99);
-        for(var i=0;i<100;i++){
+        var num = Math.round(Math.random()*90);
+        console.log('Num: '+num)
+        for(var i=0;i<90;i++){
             if(xfd.children[0].children[i].numReal===num&&xfd.children[0].children[i].opacity>0.25){
                 xfd.children[0].children[i].opacity=0.25
                 xfs.children[0].children[i].opacity=1.0
@@ -266,7 +290,7 @@ ApplicationWindow{
     }
 
     Component.onCompleted: {
-        for(var i=0;i<100;i++){
+        for(var i=0;i<90;i++){
             arraNumerosDisponibles.push(i)
             arrayNumSort[i]=[]
             arrayNumSort[i][0]=-1

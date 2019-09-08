@@ -1,13 +1,13 @@
 import QtQuick 2.0
 
-Rectangle {
+Item {
     id: r
-    border.width: unikSettings.borderWidth
-    border.color: app.c2
-    radius: unikSettings.radius*0.25
+    //border.width: unikSettings.borderWidth
+    //border.color: app.c2
+    //radius: unikSettings.radius*0.25
     width: app.width*0.5-app.fs*3
     height: app.height-app.fs*9
-    color: app.c1
+    //color: app.c1
     Grid{
         id: gridNumsSort
         spacing: app.fs*0.5
@@ -15,11 +15,11 @@ Rectangle {
         anchors.centerIn: parent
         Repeater{
             id: repNS
-            model: 100
+            model: 90
             XNum{
-                num:index>9?''+index:'0'+index
+                num:parseInt(index+1)>9?''+parseInt(index+1):'0'+parseInt(index+1)
                 opacity:0.25
-                numReal:index
+                numReal:parseInt(index+1)
                 /*Rectangle{
                     anchors.fill: parent
                     color: 'red'
@@ -28,6 +28,7 @@ Rectangle {
             }
         }
     }
+    UBgMetal{z:gridNumsSort.z-1;opacity: 0.75}
     function updateSort(){
         var narray=app.arrayNumSort
         repNS.model=narray
