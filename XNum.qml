@@ -6,7 +6,7 @@ Rectangle {
     border.width: unikSettings.borderWidth
     border.color: app.c1
     radius: width*0.5
-    width: app.fs*3.5
+    width: app.fs*3
     height: width
     color: app.c2
     property alias num: txtNum.text

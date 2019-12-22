@@ -10,6 +10,7 @@ ApplicationWindow{
     color: c3
     width: Screen.width
     height: Screen.height
+    //property
     property int fs: Screen.width*0.02*unikSettings.zoom
     property color c1
     property color c2

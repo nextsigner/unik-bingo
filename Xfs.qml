@@ -1,13 +1,13 @@
 import QtQuick 2.0
 
-Item {
+Rectangle {
     id: r
-    //border.width: unikSettings.borderWidth
-    //border.color: app.c2
-    //radius: unikSettings.radius*0.25
+    border.width: unikSettings.borderWidth
+    border.color: app.c2
+    radius: unikSettings.radius*0.25
     width: app.width*0.5-app.fs*3
     height: app.height-app.fs*9
-    //color: app.c1
+    color: app.c1
     Grid{
         id: gridNumsSort
         spacing: app.fs*0.5
