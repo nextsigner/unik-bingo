@@ -9,8 +9,7 @@ Rectangle {
     width: app.fs*3
     height: width
     color: app.c2
-    property alias num: txtNum.text
-    property int numReal
+    property alias text: txt.text
     antialiasing: true
     Image {
         id: fondo2
@@ -25,9 +24,10 @@ Rectangle {
         radius: 10
     }
     Text{
-        id: txtNum
+        id: txt
         anchors.centerIn: parent
         color: app.c1
         font.pixelSize: parent.width*0.5
+        font.family: "FontAwesome"
     }
 }

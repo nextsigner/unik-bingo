@@ -15,6 +15,7 @@ ApplicationWindow{
     property color c2
     property color c3
     property color c4
+    FontLoader {name: "FontAwesome";source: "qrc:/fontawesome-webfont.ttf";}
     Settings{
         id: appSettings
         property int currentNumColor:2
@@ -153,7 +154,7 @@ ApplicationWindow{
                         }
                         Image {
                             id: fondo
-                            source: "file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
+                            source: Qt.platform.os!=='windows'?"file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png':"file:///"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
                             anchors.fill: parent
                             antialiasing: true
                             opacity: 0.65
@@ -213,6 +214,15 @@ ApplicationWindow{
                     id:xfs
                 }
             }
+            Row{
+                XControl{
+                    text: tAuto.running?"\uf04c":"\uf04b"
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: tAuto.running=!tAuto.running
+                    }
+                }
+            }
         }
         Rectangle{
             id:xAvisoDeComienzo
@@ -232,7 +242,7 @@ ApplicationWindow{
             }
             Text {
                 id: txtAvisoDeComienzo
-                text: 'El sorte del Bingo está por comenzar. Por favor seleccionen los cartones'
+                text: 'El sorteo del Bingo está por comenzar. Por favor seleccionen los cartones'
                 font.pixelSize: app.fs*2
                 color: app.c1
                 width: parent.width*0.8
@@ -258,7 +268,10 @@ ApplicationWindow{
         running: false
         repeat: true
         interval: 6000
-        onTriggered: sortearNumero()
+        onTriggered: {
+            xAvisoDeComienzo.visible=false
+            sortearNumero()
+        }
     }
     property var arraNumerosDisponibles: []
     property var arrayNumSort: []

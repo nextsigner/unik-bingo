@@ -40,7 +40,7 @@ Item {
                 }
                 Image {
                     id: fondo3
-                    source: "file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
+                    source: Qt.platform.os!=='windows'?"file://"+unik.currentFolderPath()+'/img/fondo-ficha-1.png':"file:///"+unik.currentFolderPath()+'/img/fondo-ficha-1.png'
                     anchors.fill: parent
                     antialiasing: true
                     opacity: 0.65
