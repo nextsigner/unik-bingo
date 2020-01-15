@@ -256,6 +256,14 @@ ApplicationWindow{
         onActivated: Qt.quit()
     }
     Shortcut{
+        sequence: 'Space'
+        onActivated: tAuto.running=!tAuto.running
+    }
+    Shortcut{
+        sequence: 'Enter'
+        onActivated: tAuto.running=!tAuto.running
+    }
+    Shortcut{
         sequence: 'Up'
         onActivated: sortearNumero()
     }
